@@ -1,0 +1,39 @@
+- hosts: database_servers
+  become: yes
+  gather_facts: false
+  roles:
+   - role: app-tier
+     tags:
+      - database_servers
+
+- hosts: app_servers
+  become: yes
+  gather_facts: false
+  roles:
+   - role: db-tier
+     tags:
+      - app_servers
+
+- hosts: load_balancers
+  become: yes
+  gather_facts: false
+  roles:
+   - role: lb-tier
+     tags:
+      - load_balancers
+
+- hosts: app_servers:database_servers
+  become: false
+  gather_facts: true
+  roles:
+   - role: test-db
+     tags:
+      - smoketest
+
+- hosts: app_servers
+  become: false
+  gather_facts: true
+  roles:
+   - role: test-app
+     tags:
+      - smoketest
